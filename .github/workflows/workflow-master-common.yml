@@ -39,7 +39,16 @@ jobs:
     permissions: write-all
     concurrency:
       group: master
-    steps:   
+    steps:
+      - name: Who am I?
+        run: |
+          echo "Actor: $GITHUB_ACTOR"
+          echo "Repository: $GITHUB_REPOSITORY"
+          echo "Token check:"
+          curl -s -o /dev/null -w "%{http_code}\n" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/pmensalt-org/${{ server-id }}
+    
       - name: Checkout Code
         uses: actions/checkout@v6
 
@@ -105,7 +114,7 @@ jobs:
         env:
           TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
         run: mvn -B package --file pom.xml --settings settings.xml
-     
+
       - name: Publish to GitHub Packages Apache Maven
         if: ${{ success() && inputs.publish }}
         env:
