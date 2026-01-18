@@ -6,10 +6,6 @@ on:
       server-id:
         required: true
         type: string
-      use-java:
-        required: false
-        type: boolean
-        default: true
       java-version:
         required: false
         type: string
@@ -41,7 +37,6 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup Java
-        if: ${{ inputs.use-java }}
         uses: actions/setup-java@v5
         with:
           java-version: ${{ inputs.java-version }}
@@ -100,14 +95,6 @@ jobs:
         env:
           TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
         run: mvn -B package --file pom.xml
-
-
-
-      - name: Verify Maven settings
-        run: cat ~/.m2/settings.xml
-
-
-
 
       - name: Publish to GitHub Packages Apache Maven
         if: ${{ success() && inputs.publish }}
