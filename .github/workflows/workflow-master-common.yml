@@ -38,29 +38,37 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: 'graalvm'
-          server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
           
-      - name: Add pieter-pom GitHub Packages repo
+      - name: Write settings.xml
         run: |
-          cat <<EOF >> ~/.m2/settings.xml
+          cat > ~/.m2/settings.xml <<EOF
           <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${GITHUB_ACTOR}</username>
+                <password>${GITHUB_TOKEN}</password>
+              </server>
+            </servers>
+      
             <profiles>
               <profile>
                 <id>github</id>
                 <repositories>
                   <repository>
-                    <id>github</id>
+                    <id>github-parent</id>
                     <url>https://maven.pkg.github.com/pmensalt/pieter-pom</url>
                   </repository>
                 </repositories>
               </profile>
             </profiles>
+      
             <activeProfiles>
               <activeProfile>github</activeProfile>
             </activeProfiles>
           </settings>
+EOF
+
           
       - name: Display Maven settings
         run: cat ~/.m2/settings.xml
