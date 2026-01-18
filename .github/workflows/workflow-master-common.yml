@@ -47,7 +47,7 @@ jobs:
           echo "Token check:"
           curl -s -o /dev/null -w "%{http_code}\n" \
             -H "Authorization: Bearer $GITHUB_TOKEN" \
-            https://api.github.com/repos/pmensalt-org/${{ server-id }}
+            https://api.github.com/repos/pmensalt-org/$server-id
     
       - name: Checkout Code
         uses: actions/checkout@v6
