@@ -42,6 +42,29 @@ jobs:
           server-username: GITHUB_ACTOR
           server-password: GITHUB_TOKEN
           
+      - name: Add pieter-pom GitHub Packages repo
+        run: |
+          cat <<EOF >> ~/.m2/settings.xml
+          <settings>
+            <profiles>
+              <profile>
+                <id>github</id>
+                <repositories>
+                  <repository>
+                    <id>github</id>
+                    <url>https://maven.pkg.github.com/pmensalt/pieter-pom</url>
+                  </repository>
+                </repositories>
+              </profile>
+            </profiles>
+            <activeProfiles>
+              <activeProfile>github</activeProfile>
+            </activeProfiles>
+          </settings>
+          
+      - name: Display Maven settings
+        run: cat ~/.m2/settings.xml
+          
       - name: Bump version and push tag
         if: ${{ inputs.increment-version }}
         id: tag_version
