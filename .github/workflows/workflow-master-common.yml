@@ -18,10 +18,6 @@ on:
         required: false
         type: boolean
         default: true
-      publish:
-        required: false
-        type: boolean
-        default: true
       settings-file:
         required: true
         type: string   
