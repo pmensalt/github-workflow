@@ -24,7 +24,7 @@ jobs:
     permissions:
       contents: write
       packages: write
-      pull-requests: read
+      pull-requests: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
@@ -45,8 +45,8 @@ jobs:
           
       - name: Build with Maven
         env:
-          TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
-        run: mvn -B package --file pom.xml --settings settings.xml
+          GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B package --file pom.xml 
 
       - name: View PR author
         run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."

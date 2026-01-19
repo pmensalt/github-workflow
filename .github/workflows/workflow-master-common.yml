@@ -22,14 +22,13 @@ on:
         required: false
         type: boolean
         default: true
-    secrets:
-      TOKEN_READ_PACKAGE:
-        required: true
 
 jobs:
   workflow-master-common:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      contents: write
+      packages: write
     concurrency:
       group: master
     steps:
@@ -84,19 +83,17 @@ jobs:
         if: ${{ inputs.increment-version && !inputs.increment-version-property }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
         run: mvn versions:set -DnewVersion=${{ steps.tag_version.outputs.new_version }}
         
       - name: Set maven property version
         if: ${{ inputs.increment-version && inputs.increment-version-property}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
         run: mvn versions:set-property -Dproperty=${{ inputs.increment-version-property }} -DnewVersion=${{ steps.tag_version.outputs.new_version }}
         
       - name: Build with Maven
         env:
-          TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: mvn -B package --file pom.xml
 
       - name: Publish to GitHub Packages Apache Maven
