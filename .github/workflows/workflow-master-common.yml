@@ -22,13 +22,16 @@ on:
         required: false
         type: boolean
         default: true
+      settings-file:
+        required: true
+        type: string   
 
 jobs:
   workflow-master-common:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      packages: write
+      contents: read
+      packages: read
     concurrency:
       group: master
     steps:
@@ -40,13 +43,7 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: 'graalvm'
-          server-id: github
-          server-username: GITHUB_ACTOR
-          server-password: GITHUB_TOKEN
-          
-      - name: Display Maven settings
-        run: cat ~/.m2/settings.xml
-          
+
       - name: Bump version and push tag
         if: ${{ inputs.increment-version }}
         id: tag_version
@@ -79,31 +76,23 @@ jobs:
         run: |
           echo ${{ steps.tag_version.outputs.release_type }}     
 
+      - name: Download Settings File
+        run: |
+          curl -o settings.xml -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" ${{ inputs.settings-file }}     
+
       - name: Set maven version
         if: ${{ inputs.increment-version && !inputs.increment-version-property }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn versions:set -DnewVersion=${{ steps.tag_version.outputs.new_version }}
+        run: mvn versions:set -DnewVersion=${{ steps.tag_version.outputs.new_version }} --settings settings.xml
         
       - name: Set maven property version
         if: ${{ inputs.increment-version && inputs.increment-version-property}}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn versions:set-property -Dproperty=${{ inputs.increment-version-property }} -DnewVersion=${{ steps.tag_version.outputs.new_version }}
+        run: mvn versions:set-property -Dproperty=${{ inputs.increment-version-property }} -DnewVersion=${{ steps.tag_version.outputs.new_version }} --settings settings.xml
         
       - name: Build with Maven
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B package --file pom.xml
-
-      - name: Publish to GitHub Packages Apache Maven
-        if: ${{ success() && inputs.publish }}
-        run: mvn --batch-mode deploy
-
-      - name: Commit new version
-        if: success()
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: Automatic version bump
-          file_pattern: 'pom.xml'
-                  
+        run: mvn -B package --file pom.xml --settings settings.xml  

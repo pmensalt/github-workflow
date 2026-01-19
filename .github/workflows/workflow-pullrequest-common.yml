@@ -3,9 +3,6 @@ name: Workflow PullRequest Common
 on:
   workflow_call:
     inputs:
-      server-id:
-        required: true
-        type: string
       use-java:
         required: false
         type: boolean
@@ -37,7 +34,6 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: 'graalvm'
-          server-id: ${{ inputs.server-id }}
 
       - name: Download Settings File
         run: |
@@ -46,7 +42,7 @@ jobs:
       - name: Build with Maven
         env:
           GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
-        run: mvn -B package --file pom.xml 
+        run: mvn -B package --file pom.xml --settings settings.xml
 
       - name: View PR author
         run: echo "This PR is opened by ${{ github.event.pull_request.user.login }} ."
