@@ -23,9 +23,6 @@ on:
         required: false
         type: boolean
         default: true
-      settings-file:
-        required: true
-        type: string
     secrets:
       TOKEN_READ_PACKAGE:
         required: true
