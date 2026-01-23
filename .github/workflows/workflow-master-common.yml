@@ -13,7 +13,8 @@ on:
         default: true
       increment-version-property:
         required: false
-        type: string
+        type: boolean
+        default: false
       debug-mode:
         required: false
         type: boolean
@@ -23,7 +24,9 @@ on:
         type: string
     secrets:
       TOKEN_READ_PACKAGE:
-        required: true    
+        required: true
+      GITHUB_TOKEN:
+        required: false
 
 jobs:
   workflow-master-common:
