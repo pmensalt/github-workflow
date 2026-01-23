@@ -13,7 +13,12 @@ on:
         default: '25'
       settings-file:
         required: true
-        type: string   
+        type: string
+    secrets:
+      TOKEN_READ_PACKAGE:
+        required: true
+      TOKEN_WRITE_PACKAGE:
+        required: true
 
 jobs:
   workflow-pull-request-common:
@@ -37,11 +42,11 @@ jobs:
 
       - name: Download Settings File
         run: |
-          curl -o settings.xml -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" ${{ inputs.settings-file }}  
+          curl -o settings.xml -H "Authorization: token ${{ secrets.TOKEN_READ_PACKAGE }}" ${{ inputs.settings-file }}  
           
       - name: Build with Maven
         env:
-          GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN : ${{ secrets.TOKEN_READ_PACKAGE }}
         run: mvn -B package --file pom.xml --settings settings.xml
 
       - name: View PR author
@@ -52,11 +57,11 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: "${{ secrets.TOKEN_WRITE_PACKAGE }}"
         
       - name: Enable auto-merge for Dependabot PRs
         if: ${{github.event.pull_request.user.login == 'dependabot[bot]'}} && (steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor')
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}          
+          GITHUB_TOKEN: ${{secrets.TOKEN_WRITE_PACKAGE}}
