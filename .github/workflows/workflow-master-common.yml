@@ -29,6 +29,8 @@ on:
     secrets:
       TOKEN_READ_PACKAGE:
         required: true
+      TOKEN_WRITE_PACKAGE:
+        required: true
 
 jobs:
   workflow-master-common:
@@ -102,4 +104,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_READ_PACKAGE }}
           TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
-        run: mvn -B package --file pom.xml --settings settings.xml  
+        run: mvn -B package --file pom.xml --settings settings.xml
+
+      - name: Publish to GitHub Packages Apache Maven
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_WRITE_PACKAGE }}
+        run: mvn --batch-mode deploy --settings settings.xml
+
+      - name: Commit new version
+        if: success()
+        uses: stefanzweifel/git-auto-commit-action@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_WRITE_PACKAGE }}
+        with:
+          commit_message: Automatic version bump
+          file_pattern: 'pom.xml'
