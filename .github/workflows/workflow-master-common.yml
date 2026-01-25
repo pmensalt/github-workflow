@@ -105,6 +105,9 @@ jobs:
           TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
         run: mvn -B package --file pom.xml --settings settings.xml
 
+      - name: Show effective POM
+        run: mvn help:effective-pom -Doutput=effective-pom.xml --settings settings.xml
+
       - name: Publish to GitHub Packages Apache Maven
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_WRITE_PACKAGE }}
