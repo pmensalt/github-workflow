@@ -106,7 +106,7 @@ jobs:
         run: mvn -B package --file pom.xml --settings settings.xml
 
       - name: Show effective POM
-        run: mvn help:effective-pom -Doutput=effective-pom.xml --settings settings.xml
+        run: mvn help:effective-pom --settings settings.xml
 
       - name: Publish to GitHub Packages Apache Maven
         env:
