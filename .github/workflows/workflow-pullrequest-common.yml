@@ -45,7 +45,8 @@ jobs:
           
       - name: Build with Maven
         env:
-          GITHUB_TOKEN : ${{ secrets.TOKEN_READ_PACKAGE }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN_READ_PACKAGE }}
+          TOKEN_READ_PACKAGE: ${{ secrets.TOKEN_READ_PACKAGE }}
         run: mvn -B package --file pom.xml --settings settings.xml
 
       - name: View PR author
@@ -56,7 +57,7 @@ jobs:
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
-          github-token: "${{ secrets.TOKEN_WRITE_PACKAGE }}"
+          github-token: ${{ secrets.TOKEN_WRITE_PACKAGE }}
         
       - name: Enable auto-merge for Dependabot PRs
         if: ${{github.event.pull_request.user.login == 'dependabot[bot]'}} && (steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor')
