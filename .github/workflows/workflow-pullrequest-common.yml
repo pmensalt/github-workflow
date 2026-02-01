@@ -40,7 +40,10 @@ jobs:
       - name: Download Settings File
         run: |
           curl -o settings.xml -H "Authorization: token ${{ secrets.TOKEN_READ_PACKAGE }}" ${{ inputs.settings-file }}  
-          
+
+      - name: Display Maven settings
+        run: cat settings.xml
+
       - name: Build with Maven
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN_READ_PACKAGE }}
